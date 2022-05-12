@@ -17,26 +17,27 @@ import copy
 
 
 class TextCLSLightningModule(LightningModule):
-    def __init__(self, args):
+    def __init__(self, lr):
         super().__init__()
-        self.args = args
-        self.net = AutoModelForSequenceClassification.from_pretrained(args.backbone_name, num_labels=args.num_labels)
+        self.lr = lr
+        self.net = AutoModelForSequenceClassification.from_pretrained('roberta-base', num_labels=16)
 
         self.train_acc_metric = torchmetrics.Accuracy()
-        self.val_acc_metric = torchmetrics.F1()
-        self.test_acc_metric = torchmetrics.F1()
+        self.val_acc_metric = torchmetrics.Accuracy()
+        self.test_acc_metric = torchmetrics.Accuracy()
 
-        self.train_f1_metric = torchmetrics.F1()
-        self.val_f1_metric = torchmetrics.F1()
-        self.test_f1_metric = torchmetrics.F1()
+        self.train_f1_metric = torchmetrics.F1Score()
+        self.val_f1_metric = torchmetrics.F1Score()
+        self.test_f1_metric = torchmetrics.F1Score()
 
         self.loss_func = nn.CrossEntropyLoss()
         self.is_raw_text_input = False
         if self.is_raw_text_input:
-            self.tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name)
+            self.tokenizer = AutoTokenizer.from_pretrained(roberta-base)
             
     def get_logits_and_loss(self, input_ids, attention_mask, labels):
         outputs = self.net(input_ids, attention_mask, labels=labels)
+        #outputs = self.net(torch.stack(input_ids).T,torch.stack(attention_mask).T, labels=labels)
         logits = outputs['logits']
         loss = outputs['loss']
         return logits, loss
@@ -52,13 +53,12 @@ class TextCLSLightningModule(LightningModule):
             input_ids, attention_mask = encoding['input_ids'].to(self.device), encoding['attention_mask'].to(self.device)
         else:
             input_ids, attention_mask, labels = batch
-            
         logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
         acc = self.train_acc_metric(logits.softmax(dim=-1).cuda(), labels)
         f1 = self.train_f1_metric(logits.softmax(dim=-1).cuda(), labels)
         
         self.log(f'{prefix}/loss', loss, on_step=False, on_epoch=True, prog_bar=False, logger=True)
-        self.log(f'{prefix}/acc', acc, on_step=False, on_epoch=True, prog_bar=False, logger=True)
+        self.log(f'{prefix}/acc', acc, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         self.log(f'{prefix}/f1', f1, on_step=False, on_epoch=True, prog_bar=False, logger=True)
         return loss
 
@@ -89,7 +89,6 @@ class TextCLSLightningModule(LightningModule):
         else:
             input_ids, attention_mask, labels = batch
         logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
-        logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
         acc = self.test_acc_metric(logits.softmax(dim=-1).cuda(), labels)
         f1 = self.test_f1_metric(logits.softmax(dim=-1).cuda(), labels)
         self.log(f'{prefix}/loss', loss, on_step=False, on_epoch=True, prog_bar=False, logger=True)
@@ -97,5 +96,18 @@ class TextCLSLightningModule(LightningModule):
         self.log(f'{prefix}/f1', f1, on_step=False, on_epoch=True, prog_bar=False, logger=True)
         return loss
 
+    def predict_step(self, batch, batch_idx):        
+        if self.is_raw_text_input:
+            texts = batch["text"]
+            labels = batch["label"]
+            texts = ['None' if v is None else v for v in texts]
+            encoding = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=128)
+            input_ids, attention_mask = encoding['input_ids'].to(self.device), encoding['attention_mask'].to(self.device)
+        else:
+            input_ids, attention_mask, labels = batch
+        logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
+        return logits	
+
+
     def configure_optimizers(self):
-        return AdamW(self.net.parameters(), lr=self.args.lr, correct_bias=False)
+        return AdamW(self.net.parameters(), lr=self.lr, correct_bias=False)
