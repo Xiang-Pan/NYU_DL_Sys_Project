@@ -22,11 +22,14 @@ class TextCLSLightningModule(LightningModule):
         super().__init__()
         # assert args.lr
         self.args = args
+        # if "/" not in args.backbone_name:
         self.net = AutoModelForSequenceClassification.from_pretrained(args.backbone_name, num_labels=args.num_labels)
+        if self.args.load_classifier:
+            self.net.classifier.load_state_dict(torch.load(self.args.load_classifier))
 
         self.train_acc_metric = torchmetrics.Accuracy()
-        self.val_acc_metric = torchmetrics.F1Score()
-        self.test_acc_metric = torchmetrics.F1Score()
+        self.val_acc_metric = torchmetrics.Accuracy()
+        self.test_acc_metric = torchmetrics.Accuracy()
 
         self.train_f1_metric = torchmetrics.F1Score()
         self.val_f1_metric = torchmetrics.F1Score()
@@ -89,7 +92,6 @@ class TextCLSLightningModule(LightningModule):
         else:
             input_ids, attention_mask, labels = batch
         logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
-        logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
         acc = self.test_acc_metric(logits.softmax(dim=-1).cuda(), labels)
         f1 = self.test_f1_metric(logits.softmax(dim=-1).cuda(), labels)
         self.log(f'{prefix}/loss', loss, on_step=False, on_epoch=True, prog_bar=False, logger=True)
@@ -103,7 +105,7 @@ class TextCLSLightningModule(LightningModule):
     @staticmethod
     def add_model_specific_args(parser):
         parser.add_argument('--lr', type=float, default=0.001)
-        parser.add_argument('--num_labels', type=int, default=2)
+        parser.add_argument('--num_labels', type=int, default=16)
         parser.add_argument('--backbone_name', type=str, default='roberta-base')
         parser.add_argument('--tokenizer_name', type=str, default='roberta-base')
         return parser
