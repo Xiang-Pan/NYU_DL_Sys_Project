@@ -95,7 +95,7 @@ if active_learning:
         
 
         if method == 'lc':
-            sample, remainder = lc_sample(all_preds, sample_size)
+            sample, remainder = lc_sample(all_preds, data_batch)
         elif method == 'entropy':
             sample, remainder = entropy_sample(all_preds, data_batch)
         elif method == 'margin':
