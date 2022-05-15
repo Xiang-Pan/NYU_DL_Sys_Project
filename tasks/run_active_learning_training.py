@@ -43,7 +43,8 @@ def random_sample(all_preds, count):
 
 
 def add_al_args(parser):
-    parser.add_argument("--method", type=str, default="random")
+    # selection from all_preds
+    parser.add_argument("--method", type=str, default="random", choices=["random", "entropy", "margin", "lc"])
     return parser
 
 
@@ -124,6 +125,8 @@ if active_learning:
             save_top_k=1,
             mode="max",
         )
+
+        early_stop_callback = EarlyStopping(monitor="val/loss", min_delta=0.01, patience=20, verbose=False, mode="min")
         
         wandb_logger = WandbLogger(name=log_name, project="NYU_DL_Sys_Project", group="active_learning")
         model = TextCLSLightningModule(args=args)
@@ -132,6 +135,7 @@ if active_learning:
             max_epochs=args.max_epochs,
             progress_bar_refresh_rate=20,
             logger=wandb_logger,
+            callbacks=[checkpoint_callback, early_stop_callback],
         )
         model.train()
         trainer.fit(model, sample_loader, val_loader)
