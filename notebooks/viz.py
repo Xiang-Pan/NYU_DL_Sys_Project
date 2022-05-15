@@ -119,3 +119,7 @@ for k, v in d.items():
     plt.figure(figsize=(8, 8)) 
     sns.scatterplot(data=df_tsne, hue='class', x='Dim1', y='Dim2') 
     plt.savefig(f"./viz/tsne_{log_name}_fig")
+
+
+
+
