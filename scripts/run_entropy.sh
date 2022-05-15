@@ -1,0 +1,4 @@
+python tasks/run_active_learning_training.py --method entropy --max_epochs 100 --lr 1e-5 --batch_size 32 --gpus 1, &
+python tasks/run_active_learning_training.py --backbone_name deepset/roberta-base-squad2 --method entropy --max_epochs 100 --lr 1e-5 --batch_size 32 --gpus 1, &
+python tasks/run_active_learning_training.py --backbone_name vinai/bertweet-covid19-base-cased --method entropy --max_epochs 100 --lr 1e-5 --batch_size 32 --gpus 1, &
+python tasks/run_active_learning_training.py --backbone_name deepset/roberta-base-squad2-covid --method entropy --max_epochs 100 --lr 1e-5 --batch_size 32 --gpus 1, &
