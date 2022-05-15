@@ -2,11 +2,12 @@
 Created by: Xiang Pan
 Date: 2022-04-15 21:21:21
 LastEditors: Xiang Pan
-LastEditTime: 2022-04-15 21:27:14
+LastEditTime: 2022-05-14 19:03:53
 Email: xiangpan@nyu.edu
 FilePath: /NYU_DL_Sys_Project/task_models/text_cls_model.py
 Description: 
 '''
+from ast import parse
 import torch
 import torch.nn as nn
 from pytorch_lightning import LightningModule
@@ -19,8 +20,13 @@ import copy
 class TextCLSLightningModule(LightningModule):
     def __init__(self, lr):
         super().__init__()
-        self.lr = lr
-        self.net = AutoModelForSequenceClassification.from_pretrained('roberta-base', num_labels=16)
+
+        # assert args.lr
+        self.args = args
+        # if "/" not in args.backbone_name:
+        self.net = AutoModelForSequenceClassification.from_pretrained(args.backbone_name, num_labels=args.num_labels)
+        if self.args.load_classifier:
+            self.net.classifier.load_state_dict(torch.load(self.args.load_classifier))
 
         self.train_acc_metric = torchmetrics.Accuracy()
         self.val_acc_metric = torchmetrics.Accuracy()
@@ -36,14 +42,13 @@ class TextCLSLightningModule(LightningModule):
             self.tokenizer = AutoTokenizer.from_pretrained(roberta-base)
             
     def get_logits_and_loss(self, input_ids, attention_mask, labels):
-        outputs = self.net(input_ids, attention_mask, labels=labels)
-        #outputs = self.net(torch.stack(input_ids).T,torch.stack(attention_mask).T, labels=labels)
+
+        outputs = self.net(input_ids, attention_mask=attention_mask, labels=labels)
+
         logits = outputs['logits']
         loss = outputs['loss']
         return logits, loss
     
-    # def get_input
-
     def training_step(self, batch, batch_idx, prefix='training'):
         if self.is_raw_text_input:
             texts = batch["text"]
@@ -110,4 +115,12 @@ class TextCLSLightningModule(LightningModule):
 
 
     def configure_optimizers(self):
-        return AdamW(self.net.parameters(), lr=self.lr, correct_bias=False)
+        return AdamW(self.net.parameters(), lr=self.args.lr, correct_bias=False)
+    
+    @staticmethod
+    def add_model_specific_args(parser):
+        parser.add_argument('--lr', type=float, default=0.001)
+        parser.add_argument('--num_labels', type=int, default=16)
+        parser.add_argument('--backbone_name', type=str, default='roberta-base')
+        parser.add_argument('--tokenizer_name', type=str, default='roberta-base')
+        return parser
