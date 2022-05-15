@@ -3,6 +3,7 @@ cached_datasets/
 cached_models/
 **/wandb
 outputs/
+**/lightning_logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

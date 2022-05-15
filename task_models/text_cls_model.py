@@ -18,7 +18,7 @@ import copy
 
 
 class TextCLSLightningModule(LightningModule):
-    def __init__(self, lr):
+    def __init__(self, args):
         super().__init__()
 
         # assert args.lr
