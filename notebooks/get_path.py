@@ -11,8 +11,9 @@ def get_d():
     base = './cached_models/'
     d = {}
     for i in findAllFile(base):
-        # print(i)
+        print(i)
         path = i
+        method = path.split('/')[-3].split('_')[-2]
         if "deepset/roberta-base-squad2-covid" in path:
             model_name = "task-domain"
             backbone_name = "deepset/roberta-base-squad2-covid"
@@ -27,9 +28,10 @@ def get_d():
             backbone_name = "roberta-base"
         
         iteration = path.split("/")[-3][-1]
-        log_name = model_name + "_" + iteration
+        log_name = model_name + "_" + method + "_" + iteration
         # print(log_name)
-        d[log_name] = (path, backbone_name)
+        d[log_name] = (path, backbone_name, method)
+    print(d)
     return d
 
 

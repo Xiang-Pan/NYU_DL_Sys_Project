@@ -36,8 +36,8 @@ def get_d():
     base = './cached_models/'
     d = {}
     for i in findAllFile(base):
-        # print(i)
         path = i
+        method = path.split('/')[-3].split('_')[-2]
         if "deepset/roberta-base-squad2-covid" in path:
             model_name = "task-domain"
             backbone_name = "deepset/roberta-base-squad2-covid"
@@ -52,9 +52,10 @@ def get_d():
             backbone_name = "roberta-base"
         
         iteration = path.split("/")[-3][-1]
-        log_name = model_name + "_" + iteration
+        log_name = model_name + "_" + method + "_" + iteration
         # print(log_name)
-        d[log_name] = (path, backbone_name)
+        d[log_name] = (path, backbone_name, method)
+    print(d)
     return d
 
 
@@ -73,7 +74,7 @@ d = get_d()
 
 for k, v in d.items():
     log_name = k
-    ckpt_path, backbone_name = v
+    ckpt_path, backbone_name, method = v
     args = {"backbone_name": backbone_name, "num_labels": 16, "tokenizer_name": "roberta-base", "batch_size":32, "load_classifier": None}
     args = Namespace(**args)
     model = TextCLSLightningModule.load_from_checkpoint(ckpt_path, args=args)
