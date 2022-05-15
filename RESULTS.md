@@ -55,32 +55,11 @@ Validation Results (F1): 0.2232, epoch = 55
 ### Two-shot (bh75dtne)
 Validation Results (F1): 0.29, epoch = 55
 
-### Three-shot ()
+<!-- ### Three-shot ()
 Validation Results (F1): 0.29, epoch = 55
 
 ### Four-shot ()
 Validation Results (F1): 0.29, epoch = 55
 
 ### Five-shot ()
-Validation Results (F1): 0.29, epoch = 55
-
-## aaa
-
-
-## Other
-CovidNER Pertrained Model (CLS From fine-tuned model)  
-```
-```
-
-
-CovidNER Pertrained Model (One-Shot: One Example)
-```
-```
-
-
-CovidNER Pertrained Model (One-Shot: One Example)
-```
-```
-
-
-## Same Task Transfer
+Validation Results (F1): 0.29, epoch = 55 -->
