@@ -4,6 +4,7 @@ cached_models/
 **/wandb
 outputs/
 **/lightning_logs/
+**/*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

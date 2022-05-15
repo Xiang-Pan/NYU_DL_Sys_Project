@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 import sys
 p = os.path.abspath('.')
@@ -45,9 +46,10 @@ def random_sample(all_preds, count):
 def add_al_args(parser):
     # selection from all_preds
     parser.add_argument("--method", type=str, default="random", choices=["random", "entropy", "margin", "lc"])
+    parser.add_argument("--al_fold", type=int, default=5)
     return parser
 
-
+# get args
 from options import get_parser
 parser = get_parser()
 parser = TextCLSLightningModule.add_model_specific_args(parser=parser)
@@ -55,8 +57,7 @@ parser = Trainer.add_argparse_args(parser)
 parser = add_al_args(parser)
 args = parser.parse_args()
 
-
-
+# get dataset
 dataset = CovidQCLSDataset(tokenizer_name="roberta-base", split='train')
 train_loader = DataLoader(dataset, batch_size=args.batch_size)
 
@@ -71,7 +72,7 @@ remainder_loader = train_loader
 method = args.method
 active_learning=True
 
-iteration = 5
+iteration = args.al_fold
 
 data_size = len(dataset)
 data_batch = int(data_size/iteration)
@@ -128,7 +129,7 @@ if active_learning:
 
         # early_stop_callback = EarlyStopping(monitor="val/loss", min_delta=0.01, patience=20, verbose=False, mode="min")
         
-        wandb_logger = WandbLogger(name=log_name, project="NYU_DL_Sys_Project", group="active_learning")
+        wandb_logger = WandbLogger(name=log_name, project="NYU_DL_Sys_Project", group=f"active_learning_fold_{iteration}")
         model = TextCLSLightningModule(args=args)
         trainer = Trainer(
             gpus=args.gpus,
@@ -149,12 +150,10 @@ else:
     early_stop_callback = EarlyStopping(monitor="training/acc", stopping_threshold=0.99, verbose=False)
     trainer = Trainer(
         gpus=1,
-        max_epochs=epochs,
+        max_epochs=args.max_epochs,
         progress_bar_refresh_rate=20
     )
     model.train()
     trainer.fit(model, train_loader)
     model.eval()
     trainer.test(model, test_loader)
-    
-    

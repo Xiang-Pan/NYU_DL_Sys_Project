@@ -11,7 +11,7 @@ from ast import parse
 import torch
 import torch.nn as nn
 from pytorch_lightning import LightningModule
-from transformers import RobertaForSequenceClassification, AdamW, RobertaTokenizer, get_linear_schedule_with_warmup, RobertaModel, XLNetForSequenceClassification, AutoModelForSequenceClassification, AutoTokenizer
+from transformers import AutoModel, RobertaForSequenceClassification, AdamW, RobertaTokenizer, get_linear_schedule_with_warmup, RobertaModel, XLNetForSequenceClassification, AutoModelForSequenceClassification, AutoTokenizer
 import torchmetrics
 from pytorch_lightning.callbacks import ModelCheckpoint
 import copy
@@ -27,6 +27,7 @@ class TextCLSLightningModule(LightningModule):
         self.net = AutoModelForSequenceClassification.from_pretrained(args.backbone_name, num_labels=args.num_labels)
         if self.args.load_classifier:
             self.net.classifier.load_state_dict(torch.load(self.args.load_classifier))
+        
 
         self.train_acc_metric = torchmetrics.Accuracy()
         self.val_acc_metric = torchmetrics.Accuracy()
@@ -39,11 +40,17 @@ class TextCLSLightningModule(LightningModule):
         self.loss_func = nn.CrossEntropyLoss()
         self.is_raw_text_input = False
         if self.is_raw_text_input:
-            self.tokenizer = AutoTokenizer.from_pretrained(roberta-base)
+            self.tokenizer = AutoTokenizer.from_pretrained("roberta-base")
             
     def get_logits_and_loss(self, input_ids, attention_mask, labels):
 
-        outputs = self.net(input_ids, attention_mask=attention_mask, labels=labels)
+        # set output pooled_output to True to get the pooled output
+        # self.net.co
+
+        # outputs = self.net.roberta(input_ids, attention_mask=attention_mask, labels=labels)
+        outputs = self.net.roberta(input_ids, attention_mask=attention_mask)
+        print(outputs.keys())
+        input()
 
         logits = outputs['logits']
         loss = outputs['loss']
@@ -111,7 +118,19 @@ class TextCLSLightningModule(LightningModule):
         else:
             input_ids, attention_mask, labels = batch
         logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
-        return logits	
+        return logits
+    
+    def get_features(self, batch, batch_idx):
+        if self.is_raw_text_input:
+            texts = batch["text"]
+            labels = batch["label"]
+            texts = ['None' if v is None else v for v in texts]
+            encoding = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=128)
+            input_ids, attention_mask = encoding['input_ids'].to(self.device), encoding['attention_mask'].to(self.device)
+        else:
+            input_ids, attention_mask, labels = batch
+        logits, loss = self.get_logits_and_loss(input_ids, attention_mask, labels)
+        return logits
 
 
     def configure_optimizers(self):
