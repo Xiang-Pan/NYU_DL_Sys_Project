@@ -27,7 +27,7 @@ def lc_sample(all_preds, count):
     return max_probs[:count+1], max_probs[count+1:]
 
 def entropy_sample(all_preds, count):
-    max_probs = [(entropy(p.detach().numpy()), idx, p.argmax().item()) for idx, p in enumerate(all_preds)]
+    max_probs = [(entropy(p.detach().cpu().numpy()), idx, p.argmax().item()) for idx, p in enumerate(all_preds)]
     max_probs.sort(reverse=True)
     return max_probs[:count+1], max_probs[count+1:]
 
