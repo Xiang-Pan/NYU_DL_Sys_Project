@@ -94,11 +94,6 @@ Please check 310.yml for the enviroment setting.
 <!-- |-------------|-----|-----|-----|---|-----|----| -->
 | log_name              | max_l2_dist | min_l2_dist | mean_l2_dist | max_cos_dist | min_cos_dist | mean_cos_dist |
 | --------------------- | ----------- | ----------- | ------------ | ------------ | ------------ | ------------- |
-| baseline_0            | 14.14       | 5.09        | 9.38         | 1            | -0.37        | 0.13          |
-| baseline_1            | 14.8        | 7.85        | 11.33        | 1            | -0.3         | 0.03          |
-| baseline_2            | 14.57       | 7.55        | 11.07        | 1            | -0.25        | 0.07          |
-| baseline_3            | 14.89       | 10.78       | 12.23        | 1            | -0.2         | 0.03          |
-| baseline_4            | 15.05       | 11.3        | 12.43        | 1            | -0.18        | 0.02          |
 | baseline_entropy_0    | 12.78       | 4.65        | 8.84         | 1            | -0.27        | 0.13          |
 | baseline_entropy_1    | 14.79       | 5.84        | 11.11        | 1            | -0.26        | 0.04          |
 | baseline_entropy_2    | 14.86       | 8.68        | 11.9         | 1            | -0.2         | 0.02          |
@@ -119,11 +114,6 @@ Please check 310.yml for the enviroment setting.
 | baseline_random_2     | 14.6        | 10.07       | 11.77        | 1            | -0.24        | 0.03          |
 | baseline_random_3     | 14.89       | 10.55       | 12.43        | 1            | -0.19        | 0.02          |
 | baseline_random_4     | 14.59       | 9.76        | 11.96        | 1            | -0.27        | 0.05          |
-| domain_0              | 4.07        | 1.66        | 2.52         | 1            | 0.12         | 0.56          |
-| domain_1              | 5.94        | 2.27        | 3.69         | 1            | -0.1         | 0.27          |
-| domain_2              | 5.76        | 2.96        | 4.11         | 1            | -0.32        | 0.19          |
-| domain_3              | 6.87        | 3.7         | 4.72         | 1            | -0.25        | 0.14          |
-| domain_4              | 6.51        | 4.03        | 5            | 1            | -0.27        | 0.15          |
 | domain_entropy_0      | 5.38        | 1.32        | 2.76         | 1            | -0.03        | 0.5           |
 | domain_entropy_1      | 5.94        | 2.27        | 3.69         | 1            | -0.1         | 0.27          |
 | domain_entropy_2      | 5.76        | 2.96        | 4.11         | 1            | -0.32        | 0.19          |
@@ -144,11 +134,6 @@ Please check 310.yml for the enviroment setting.
 | domain_random_2       | 5.69        | 3.3         | 4.41         | 1            | -0.18        | 0.16          |
 | domain_random_3       | 5.81        | 3.64        | 4.54         | 1            | -0.18        | 0.15          |
 | domain_random_4       | 6.39        | 4.41        | 4.91         | 1            | -0.2         | 0.13          |
-| task_0                | 12.9        | 5.41        | 9.23         | 1            | -0.3         | 0.09          |
-| task_1                | 14.45       | 5.46        | 10.39        | 1            | -0.28        | 0.1           |
-| task_2                | 14.83       | 9.5         | 11.96        | 1            | -0.22        | 0.03          |
-| task_3                | 14.84       | 11.39       | 12.41        | 1            | -0.17        | 0.02          |
-| task_4                | 14.65       | 10.56       | 12.21        | 1            | -0.19        | 0.04          |
 | task_entropy_0        | 13.21       | 5.49        | 9.24         | 1            | -0.28        | 0.09          |
 | task_entropy_1        | 14.29       | 5.48        | 10.4         | 1            | -0.3         | 0.1           |
 | task_entropy_2        | 15.03       | 9.77        | 11.9         | 1            | -0.23        | 0.03          |
@@ -202,7 +187,7 @@ Please check 310.yml for the enviroment setting.
 
 For more results, please check the viz folder.
 
-## TSNE_Baseline_Lease_Confidence 
+## TSNE_Baseline_Least_Confidence 
 
 ![](./viz/tsne_baseline_lc_0_fig.png)
 
